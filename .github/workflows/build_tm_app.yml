@@ -11,28 +11,39 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    # 1. 检出你的代码
     - name: Checkout Code
       uses: actions/checkout@v4
 
+    # 2. 初始化云端 Node.js 环境 (锁死经典稳定版环境)
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
         node-version: 16
         cache: 'yarn'
 
+    # 3. 🔴 终极修复：全局强行转换 git:// 协议为 https:// 协议，彻底粉碎 128 超时报错
+    - name: Force HTTPS for Git Dependencies
+      run: |
+        git config --global url."https://github.com/".insteadOf git://github.com/
+
+    # 4. 清理可能导致冲突的残存锁文件
     - name: Clean Up Old Lock Files
       run: |
         rm -f yarn.lock
         rm -f package-lock.json
 
+    # 5. 执行依赖安装 (已无视协议神坑)
     - name: Install Dependencies
       run: |
         yarn install --ignore-engines
 
+    # 6. 项目编译打包
     - name: Build Project
       run: |
         yarn build
 
+    # 7. 将打包生成的 build/ 静态资产压缩上传供本地下载
     - name: Upload Packaged Artifact
       uses: actions/upload-artifact@v4
       with:
