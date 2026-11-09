@@ -1,0 +1,41 @@
+name: Build and Pack Teachable Machine V1
+
+on:
+  push:
+    branches:
+      - master
+      - main
+
+jobs:
+  build-and-pack:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 16
+        cache: 'yarn'
+
+    - name: Clean Up Old Lock Files
+      run: |
+        rm -f yarn.lock
+        rm -f package-lock.json
+
+    - name: Install Dependencies
+      run: |
+        yarn install --ignore-engines
+
+    - name: Build Project
+      run: |
+        yarn build
+
+    - name: Upload Packaged Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: teachable-machine-v1-local-app
+        path: build/
+        retention-days: 7
