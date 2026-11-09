@@ -48,5 +48,5 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: teachable-machine-v1-local-app
-        path: build/
+        path: dist/
         retention-days: 7
